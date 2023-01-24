@@ -58,7 +58,7 @@ We pick the best configuration from the 10 GB experiments, and scale up to more 
 
 4 `g4dn.12xlarge` instances.
 
-![Throughput](graphs/10g-cost.png)
+![Throughput](graphs/300g-results.png)
 ## Microbenchmark
 Run a microbenchmark that reads from S3 and does a dummy preprocessing step with `time.sleep(1)`.
 
