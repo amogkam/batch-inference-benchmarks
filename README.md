@@ -88,7 +88,7 @@ Profile of UDF<id=56>
 We also tried enabling [stage level scheduling](https://books.japila.pl/apache-spark-internals/stage-level-scheduling/) to maximize both CPU and GPU parallelism without having to use two separate clusters.
 
 1. Start a standard cluster with `g4dn.12xlarge` instance (4 GPUs)
-2. Start a standard Databricks cluster with `spark.task.resource.gpu.amount` set to `# GPU/# CPU==1/12==0.0833`. This is to prevent GPU from limiting parallelism during reading+preprocessing stage.
+2. Set `spark.task.resource.gpu.amount` to `# GPU/# CPU==1/12==0.0833` during cluster startup. This is to prevent GPU from limiting parallelism during reading+preprocessing stage.
 3. After the preprocessing stage, use create a new `TaskResourceRequest` with 1 GPU per task. Run prediction on the preprocessed RDD with the newly created `TaskResourceRequest`.
 
 However, the inference stage is not respecting the new resource request, leading to more parallelism than available GPU and CUDA OOM.
