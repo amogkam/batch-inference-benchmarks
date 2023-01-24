@@ -28,7 +28,7 @@ All experiments are run in Databricks using Databricks Runtime v12.0, and using 
     - Local clusters do not support GPU scheduling. Spark will schedule tasks based on available CPU cores.
         - We have to manually repartition the data between the preprocessing and prediction steps to match the number of GPUs.
         - We cannot use multi-GPU machines since we cannot specify the CUDA visible devices for each task.
-    - [Code](https://github.com/amogkam/spark-batch-inference-benchmarks/blob/main/code/torch-batch-inference-s3-10G-local.py)
+    - [Code](code/torch-batch-inference-s3-10G-single-node.ipynb)
         
 - **Standard**. Creates a standard Databricks cluster.
     - This starts a 2 node cluster: 1 node for the driver that does not run tasks, and 1 node for the executor.
@@ -37,25 +37,63 @@ All experiments are run in Databricks using Databricks Runtime v12.0, and using 
     - Two different instance types:
         - **1 GPU**: `g4dn.xlarge`
         - **4 GPU**: `gd4n.12xlarge`
-    - [Code](https://github.com/amogkam/spark-batch-inference-benchmarks/blob/main/code/torch-batch-inference-s3-10G-standard.py)
+    - [Code](code/torch-batch-inference-s3-10G-standard.ipynb)
 
 - **2 stage**. Use 2 separate clusters: 1 CPU-only cluster for preprocessing, and 1 GPU cluster for predicting. We use DBFS to store the intermeditate preprocessed data. This allows preprocessing to scale independently from prediction, at the cost of having to persist data in between the steps.
     - **CPU cluster**: 1 `m6gd.12xlarge` instance with Photon acceleration enabled. This is the smallest `m6gd` instance that does not OOM.
     - **GPU cluster**: 1 `g4dn.12xlarge` instance.
-    - [CPU Code](https://github.com/amogkam/spark-batch-inference-benchmarks/blob/main/code/torch-batch-inference-10G-s3-cpu-only.py)
-    - [GPU Code](https://github.com/amogkam/spark-batch-inference-benchmarks/blob/main/code/torch-batch-inference-10G-s3-predict-only.py)
+    - [CPU Code](code/torch-batch-inference-10G-s3-cpu-only.ipynb)
+    - [GPU Code](code/torch-batch-inference-10G-s3-predict-only.ipynb)
 
 ### Results
+![Throughput](graphs/10g-results.png)
+
+![Cost](graphs/10g-cost.png)
 
 ## 300 GB
 
 We pick the best configuration from the 10 GB experiments, and scale up to more nodes for inference on 300 GB data.
 
+[Code](code/torch-batch-inference-300G-s3-standard.ipynb)
+
 4 `g4dn.12xlarge` instances.
 
-### Results
-
+![Throughput](graphs/10g-cost.png)
 ## Microbenchmark
+Run a microbenchmark that reads from S3 and does a dummy preprocessing step with `time.sleep(1)`.
+
+[Full code is here](code/microbenchmark.ipynb)
+
+We force execution of the read before executing preprocessing to isolate just the preprocessing time.
+
+We expect that the preprocessing step takes ~1 second, but it takes **84.838** seconds instead.
+
+Profiling shows that the actual UDF execution is 1 second, so the additional time is coming from some other Spark overhead.
+
+```
+============================================================
+Profile of UDF<id=56>
+============================================================
+         48 function calls in 16.015 seconds
+
+   Ordered by: internal time, cumulative time
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+       16   16.014    1.001   16.014    1.001 {built-in method time.sleep}
+       16    0.000    0.000   16.015    1.001 <command-566047737056994>:7(dummy_preprocess)
+       16    0.000    0.000    0.000    0.000 {method 'disable' of '_lsprof.Profiler' objects}
+```
+
+## Stage level Scheduling
+We also tried enabling [stage level scheduling](https://books.japila.pl/apache-spark-internals/stage-level-scheduling/) to maximize both CPU and GPU parallelism without having to use two separate clusters.
+
+1. Start a standard cluster with `g4dn.12xlarge` instance (4 GPUs)
+2. Start a standard Databricks cluster with `spark.task.resource.gpu.amount` set to `# GPU/# CPU==1/12==0.0833`. This is to prevent GPU from limiting parallelism during reading+preprocessing stage.
+3. After the preprocessing stage, use create a new `TaskResourceRequest` with 1 GPU per task. Run prediction on the preprocessed RDD with the newly created `TaskResourceRequest`.
+
+However, the inference stage is not respecting the new resource request, leading to more parallelism than available GPU and CUDA OOM.
+
+[Full code is here](code/torch-batch-inference-10G-stage-level-scheduling.ipynb)
 
 
 
