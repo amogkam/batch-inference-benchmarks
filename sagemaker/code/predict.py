@@ -21,7 +21,7 @@ def model_fn(model_dir):
 # https://stackoverflow.com/questions/62415237/aws-sagemaker-using-parquet-file-for-batch-transform-job
 def load_parquet_from_bytearray(request_body):
     image_as_bytes = io.BytesIO(request_body)
-    df = pd.read_parquet(images_as_bytes)
+    df = pd.read_parquet(image_as_bytes)
     print("# Number of images: ", len(df))
     images = np.stack(df["image"].values).astype(float)
     torch_tensor = torch.Tensor(images.transpose(0, 3, 1, 2))

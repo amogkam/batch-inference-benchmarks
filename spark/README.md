@@ -8,7 +8,7 @@ We use the image classification task from the [MLPerf Inference Benchmark suite]
 - ResNet50 model
 
 The workload is a simple 3 step pipeline:
-![Pipeline](graphs/pipeline.png)
+![Pipeline](../../images/pipeline.png)
 
 Images are saved in parquet format (with ~1k images per parquet file). 
 
