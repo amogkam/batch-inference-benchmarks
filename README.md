@@ -8,7 +8,7 @@ We use the image classification task from the [MLPerf Inference Benchmark suite]
 - [PyTorch ResNet50 model](https://pytorch.org/vision/main/models/generated/torchvision.models.resnet50.html)
 
 The workload is a simple 3 step pipeline:
-![Pipeline](../../images/pipeline.png)
+![Pipeline](./images/pipeline.png)
 
 Images are stored in parquet format (with ~1k images per parquet file) and are read from S3 from within the same region.
 
@@ -40,8 +40,7 @@ We tried 2 configurations. All experiments were run on Databricks with the Datab
 Additional configurations were tried that performed worse which you can read about in the [spark directory](spark/README.md).
 
 ### SageMaker Batch Transform
-SageMaker Batch Transform with 4 `g4dn.xlarge` instances. There is no built-in multi-GPU support, so we cannot use the multi-GPU `g4dn.12xlarge` instance. There are still 4 GPUs total in the cluster.
+ls
 
-[Code](sagemaker/code/inference-image.ipynb)
 
 Additional configurations were tried that failed, which you can read more about in the [sagemaker directory](sagemaker/README.md)
