@@ -40,7 +40,8 @@ We tried 2 configurations. All experiments were run on Databricks with the Datab
 Additional configurations were tried that performed worse which you can read about in the [spark directory](spark/README.md).
 
 ### SageMaker Batch Transform
-ls
+SageMaker Batch Transform with 4 `g4dn.xlarge` instances. There is no built-in multi-GPU support, so we cannot use the multi-GPU `g4dn.12xlarge` instance. There are still 4 GPUs total in the cluster.
 
+[Code](sagemaker/code/inference-image.ipynb)
 
 Additional configurations were tried that failed, which you can read more about in the [sagemaker directory](sagemaker/README.md)
