@@ -12,7 +12,7 @@ SageMaker Batch Transform reads raw images from S3 and sends them as individual 
 
 https://docs.aws.amazon.com/sagemaker/latest/dg/batch-transform.html.
 
-
+**Throughput**: 18.702 img/sec
 ## Parquet files
 
 Since SageMaker does not batch multiple image files together, this means our GPU is extremely underutilized. We tried an additional approach involving batching images together into parquet files beforehand and doing inference on these parquet files.

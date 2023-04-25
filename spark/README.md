@@ -30,25 +30,25 @@ All experiments are run in Databricks using Databricks Runtime v12.0, and using 
         - We cannot use multi-GPU machines since we cannot specify the CUDA visible devices for each task.
     - [Code](code/torch-batch-inference-s3-10G-single-node.ipynb)
         
-- **Standard**. Creates a standard Databricks cluster.
+- **Single-cluster**. Creates a standard Databricks cluster.
     - This starts a 2 node cluster: 1 node for the driver that does not run tasks, and 1 node for the executor.
     - Standard clusters support GPU scheduling
         - However, since Spark fuses all stages, the effective parallelism is limited by the # of GPUs.
-    - Two different instance types:
-        - **1 GPU**: `g4dn.xlarge`
-        - **4 GPU**: `gd4n.12xlarge`
+    - Use single `gd4n.12xlarge` instance consisting of 4 GPUs.
     - [Code](code/torch-batch-inference-s3-10G-standard.ipynb)
 
-- **2 stage**. Use 2 separate clusters: 1 CPU-only cluster for preprocessing, and 1 GPU cluster for predicting. We use DBFS to store the intermeditate preprocessed data. This allows preprocessing to scale independently from prediction, at the cost of having to persist data in between the steps.
+- **Multi-cluster**. Use 2 separate clusters: 1 CPU-only cluster for preprocessing, and 1 GPU cluster for predicting. We use DBFS to store the intermeditate preprocessed data. This allows preprocessing to scale independently from prediction, at the cost of having to persist data in between the steps.
     - **CPU cluster**: 1 `m6gd.12xlarge` instance with Photon acceleration enabled. This is the smallest `m6gd` instance that does not OOM.
     - **GPU cluster**: 1 `g4dn.12xlarge` instance.
     - [CPU Code](code/torch-batch-inference-10G-s3-cpu-only.ipynb)
     - [GPU Code](code/torch-batch-inference-10G-s3-predict-only.ipynb)
 
-### Results
-![Throughput](graphs/10g-results.png)
 
-![Cost](graphs/10g-cost.png)
+| Configuration   | Throughput (img/sec) |
+|-----------------|----------------------|
+| Local           | 117.658              |
+| Single-cluster  | 147.848              |
+| Multi-cluster   | 108.768              |
 
 ## 300 GB
 
@@ -58,15 +58,17 @@ We pick the best configuration from the 10 GB experiments, and scale up to more 
 
 4 `g4dn.12xlarge` instances.
 
-![Throughput](graphs/300g-results.png)
+| Configuration  | Throughput (img/sec) |
+|----------------|----------------------|
+| Single-cluster | 689.084              |
 ## Microbenchmark
-Run a microbenchmark that reads from S3 and does a dummy preprocessing step with `time.sleep(1)`.
+Run a microbenchmark that reads from S3, caches the dataset, and then does a dummy preprocessing step with `time.sleep(1)`.
 
 [Full code is here](code/microbenchmark.ipynb)
 
 We force execution of the read before executing preprocessing to isolate just the preprocessing time.
 
-We expect that the preprocessing step takes ~1 second, but it takes **84.838** seconds instead.
+Preprocessing takes **128.918** seconds.
 
 Profiling shows that the actual UDF execution is 1 second, so the additional time is coming from some other Spark overhead.
 
@@ -79,7 +81,7 @@ Profile of UDF<id=56>
    Ordered by: internal time, cumulative time
 
    ncalls  tottime  percall  cumtime  percall filename:lineno(function)
-       16   16.014    1.001   16.014    1.001 {built-in method time.sleep}
+       16   16.015    1.001   16.015    1.001 {built-in method time.sleep}
        16    0.000    0.000   16.015    1.001 <command-566047737056994>:7(dummy_preprocess)
        16    0.000    0.000    0.000    0.000 {method 'disable' of '_lsprof.Profiler' objects}
 ```

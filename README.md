@@ -15,13 +15,15 @@ Images are stored in parquet format (with ~1k images per parquet file) and are r
 ## 10 GB
 In-memory dataset size is 10 GB. 10 GB dataset. The compressed on-disk size is much smaller.
 
+All experiments used PyTorch v1.12.1 and CUDA 11.3
+
 ## Configurations
 
 ### Ray
 - 1 `gd4n.12xlarge` instance. Contains 48 CPUs and 4 GPUs.
 - Experiments were all run on the [Anyscale platform](https://www.anyscale.com/).
-- Uses [Ray Datasets](https://docs.ray.io/en/latest/data/dataset.html) and [Ray AI Runtime](https://docs.ray.io/en/latest/ray-air/getting-started.html) v2.3 
-- [Code](ray/code/10G-bulk.py)
+- Uses [Ray Data](https://docs.ray.io/en/latest/data/dataset.html) [nightly version](https://docs.ray.io/en/latest/ray-overview/installation.html#daily-releases-nightlies). 
+- [Code](ray/code/ray-10G.py)
 
 ### Spark
 We tried 2 configurations. All experiments were run on Databricks with the Databricks Runtime v12.0, and using the ML GPU runtime when applicable.
