@@ -1,4 +1,4 @@
-# Batch Inference Benchmarking with ApacheSpark
+# Batch Inference Benchmarking with Apache Spark
 
 This repo contains benchmarks for batch inference benchmarking with Apache Spark.
 
