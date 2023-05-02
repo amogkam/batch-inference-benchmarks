@@ -1,6 +1,6 @@
 # Batch Inference Benchmarking
 
-This repo contains benchmarks for batch inference benchmarking using Ray, Spark and Sagemaker Batch Transform.
+This repo contains benchmarks for batch inference benchmarking using Ray, Apache Spark and Amazon SageMaker Batch Transform.
 
 We use the image classification task from the [MLPerf Inference Benchmark suite](https://arxiv.org/pdf/1911.02549.pdf) in the offline setting.
     
