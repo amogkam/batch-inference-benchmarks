@@ -1,6 +1,6 @@
-# Batch Inference Benchmarking with Spark
+# Batch Inference Benchmarking with Apache Spark
 
-This repo contains benchmarks for batch inference benchmarking with Spark.
+This repo contains benchmarks for batch inference benchmarking with Apache Spark.
 
 We use the image classification task from the [MLPerf Inference Benchmark suite](https://arxiv.org/pdf/1911.02549.pdf) in the offline setting.
     
@@ -16,7 +16,7 @@ We tried with two dataset sizes, 10 GB and 300 GB. These sizes are for when the 
 
 We also run a microbenchmark to measure overhead from Spark.
 
-All experiments are run in Databricks using Databricks Runtime v12.0, and using the ML GPU runtime when applicable.
+All experiments are run in Databricks using Databricks Runtime v12.0, with Spark 3.3.1,and using the ML GPU runtime when applicable.
 
 ## 10 GB
 10 GB dataset using a single-node cluster.
