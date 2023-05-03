@@ -37,6 +37,18 @@ We scale up to more nodes for inference on 300 GB data. Uses 4 `g4dn.12xlarge` i
 
 **Throughput**: 2658.314 img/sec
 
+
+## 10 TB
+
+We scale up to even more nodes for inference on 10 TB data. Since deep learning workloads are often memory contrained, we use
+a heterogenous cluster consisting of some GPU nodes and some CPU-only nodes to fully maximize throughput and GPU utilization.
+
+The cluster consists of:
+- 10 `g4dn.12xlarge` instances
+- 10 `m5.16xlarge` instances
+
+**Throughput** 11580.958 img/sec
+
 ## Microbenchmark
 Run a microbenchmark that reads from S3 and does a dummy preprocessing step with `time.sleep(1)`.
 

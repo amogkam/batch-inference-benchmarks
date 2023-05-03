@@ -36,6 +36,7 @@ All experiments are run in Databricks using Databricks Runtime v12.0, with Spark
         - However, since Spark fuses all stages, the effective parallelism is limited by the # of GPUs.
     - Use single `gd4n.12xlarge` instance consisting of 4 GPUs.
     - [Code](code/torch-batch-inference-s3-10G-standard.ipynb)
+    - Also tried using the [Iterator UDF API](https://spark.apache.org/docs/3.1.2/api/python/reference/api/pyspark.sql.functions.pandas_udf.html#pyspark.sql.functions.pandas_udf). [Code](torch-batch-inference-s3-10G-standard-iterator.ipynb)
 
 - **Multi-cluster**. Use 2 separate clusters: 1 CPU-only cluster for preprocessing, and 1 GPU cluster for predicting. We use DBFS to store the intermeditate preprocessed data. This allows preprocessing to scale independently from prediction, at the cost of having to persist data in between the steps.
     - **CPU cluster**: 1 `m6gd.12xlarge` instance with Photon acceleration enabled. This is the smallest `m6gd` instance that does not OOM.
@@ -44,11 +45,13 @@ All experiments are run in Databricks using Databricks Runtime v12.0, with Spark
     - [GPU Code](code/torch-batch-inference-10G-s3-predict-only.ipynb)
 
 
-| Configuration   | Throughput (img/sec) |
-|-----------------|----------------------|
-| Local           | 117.658              |
-| Single-cluster  | 147.848              |
-| Multi-cluster   | 108.768              |
+
+| Configuration           | Throughput (img/sec) |
+|-------------------------|----------------------|
+| Local                   | 117.658              |
+| Single-cluster          | 147.848              |
+| Single-cluster Iterator | 113.353              |
+| Multi-cluster           | 108.768              |
 
 ## 300 GB
 
