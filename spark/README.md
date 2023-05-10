@@ -23,6 +23,8 @@ All experiments are run in Databricks using Databricks Runtime v12.0, with Spark
 
 ### Configurations
 
+**Update: Thanks to the Databricks spark developers for pointing out the prefetching flag (`spark.databricks.execution.pandasUDF.prefetch.maxBatches`) available in Databricks Runtime that can be used with the Iterator API. It is also possible to implement this manually in Spark open source with background threads. With prefetching set to 4, Spark reaches 159.86 images/s.**
+
 - **Local**: `g4dn.16xlarge` instance (1 GPU). This is the smallest `g4dn` instance that does not OOM.
     - Creates a [single-node cluster](https://docs.databricks.com/clusters/single-node.html) which starts Spark locally on the driver.
     - Local clusters do not support GPU scheduling. Spark will schedule tasks based on available CPU cores.
@@ -37,6 +39,7 @@ All experiments are run in Databricks using Databricks Runtime v12.0, with Spark
     - Use single `gd4n.12xlarge` instance consisting of 4 GPUs.
     - [Code](code/torch-batch-inference-s3-10G-standard.ipynb)
     - Also tried using the [Iterator UDF API](https://spark.apache.org/docs/3.1.2/api/python/reference/api/pyspark.sql.functions.pandas_udf.html#pyspark.sql.functions.pandas_udf). [Code](torch-batch-inference-s3-10G-standard-iterator.ipynb)
+    - Per feedback from Databricks spark developers, also tried using [Iterator UDF API](https://spark.apache.org/docs/3.1.2/api/python/reference/api/pyspark.sql.functions.pandas_udf.html#pyspark.sql.functions.pandas_udf) with Databricks prefetching support. [Code](torch-batch-inference-s3-10G-standard-iterator-databricks-prefetch.ipynb).
 
 - **Multi-cluster**. Use 2 separate clusters: 1 CPU-only cluster for preprocessing, and 1 GPU cluster for predicting. We use DBFS to store the intermeditate preprocessed data. This allows preprocessing to scale independently from prediction, at the cost of having to persist data in between the steps.
     - **CPU cluster**: 1 `m6gd.12xlarge` instance with Photon acceleration enabled. This is the smallest `m6gd` instance that does not OOM.
@@ -46,12 +49,13 @@ All experiments are run in Databricks using Databricks Runtime v12.0, with Spark
 
 
 
-| Configuration           | Throughput (img/sec) |
-|-------------------------|----------------------|
-| Local                   | 117.658              |
-| Single-cluster          | 147.848              |
-| Single-cluster Iterator | 113.353              |
-| Multi-cluster           | 108.768              |
+| Configuration                                 | Throughput (img/sec) |
+|-----------------------------------------------|----------------------|
+| Local                                         | 117.658              |
+| Single-cluster                                | 147.848              |
+| Single-cluster Iterator                       | 113.353              |
+| Single-cluster Iterator + Databricks prefetch | 159.862              |
+| Multi-cluster                                 | 108.768              |
 
 ## 300 GB
 
