@@ -23,7 +23,7 @@ All experiments are run in Databricks using Databricks Runtime v12.0, with Spark
 
 ### Configurations
 
-**Update: Thanks to the Databricks spark developers for pointing out the prefetching flag (`spark.databricks.execution.pandasUDF.prefetch.maxBatches`) available in Databricks Runtime that can be used with the Iterator API. It is also possible to implement this manually in Spark open source with background threads. With prefetching set to 4, Spark reaches 159.86 images/s.**
+**Update 5/10**: Thanks to the Databricks spark developers for pointing out the prefetching flag (`spark.databricks.execution.pandasUDF.prefetch.maxBatches`) available in Databricks Runtime that can be used with the Iterator API. It is also possible to implement this manually in Spark open source with background threads. With prefetching set to 4, Spark reaches 159.86 images/s.
 
 - **Local**: `g4dn.16xlarge` instance (1 GPU). This is the smallest `g4dn` instance that does not OOM.
     - Creates a [single-node cluster](https://docs.databricks.com/clusters/single-node.html) which starts Spark locally on the driver.
