@@ -39,7 +39,7 @@ All experiments are run in Databricks using Databricks Runtime v12.0, with Spark
     - Use single `gd4n.12xlarge` instance consisting of 4 GPUs.
     - [Code](code/torch-batch-inference-s3-10G-standard.ipynb)
     - Also tried using the [Iterator UDF API](https://spark.apache.org/docs/3.1.2/api/python/reference/api/pyspark.sql.functions.pandas_udf.html#pyspark.sql.functions.pandas_udf). [Code](torch-batch-inference-s3-10G-standard-iterator.ipynb)
-    - Per feedback from Databricks spark developers, also tried using [Iterator UDF API](https://spark.apache.org/docs/3.1.2/api/python/reference/api/pyspark.sql.functions.pandas_udf.html#pyspark.sql.functions.pandas_udf) with Databricks prefetching support. [Code](torch-batch-inference-s3-10G-standard-iterator-databricks-prefetch.ipynb).
+    - Per feedback from Databricks spark developers, also tried using [Iterator UDF API](https://spark.apache.org/docs/3.1.2/api/python/reference/api/pyspark.sql.functions.pandas_udf.html#pyspark.sql.functions.pandas_udf) with Databricks prefetching support. [Code](code/torch-batch-inference-s3-10G-standard-iterator-databricks-prefetch.ipynb).
 
 - **Multi-cluster**. Use 2 separate clusters: 1 CPU-only cluster for preprocessing, and 1 GPU cluster for predicting. We use DBFS to store the intermeditate preprocessed data. This allows preprocessing to scale independently from prediction, at the cost of having to persist data in between the steps.
     - **CPU cluster**: 1 `m6gd.12xlarge` instance with Photon acceleration enabled. This is the smallest `m6gd` instance that does not OOM.
