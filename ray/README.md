@@ -14,9 +14,9 @@ Images are saved in parquet format (with ~1k images per parquet file).
 
 We tried with two dataset sizes, 10 GB and 300 GB. These sizes are for when the data is loaded in memory. The compressed on-disk size is much smaller.
 
-We also run a microbenchmark to measure overhead from Spark.
+We also run a microbenchmark to measure overhead from Ray Data.
 
-All experiments are run in Databricks using Databricks Runtime v12.0, and using the ML GPU runtime when applicable.
+All experiments are run in Anyscale using Ray 2.5.
 
 ## 10 GB
 10 GB dataset using a single-node cluster.
