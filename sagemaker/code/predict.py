@@ -20,10 +20,9 @@ def model_fn(model_dir):
     model.eval()
     return model
 
-# https://stackoverflow.com/questions/62415237/aws-sagemaker-using-parquet-file-for-batch-transform-job
+
 def load_parquet_from_bytearray(request_body):
-    image_as_bytes = io.BytesIO(request_body)
-    reader = pa.BufferReader(image_as_bytes)
+    reader = pa.BufferReader(request_body)
     df = pq.read_table(reader)
     batch_dim = len(df)
     numpy_batch = np.stack(df["image"].to_numpy())
